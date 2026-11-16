@@ -48,10 +48,28 @@ def test_peer_rebuilds_the_log_from_shuffled_delivery(
     delivery = written_log[:]
     random.Random(7).shuffle(delivery)  # noqa: S311 - deterministic test order, not crypto
     with SqliteStore(tmp_path / "peer.db") as store:
-        ingestor = Ingestor(store, EntryVerifier(TEAM))
+        ingestor = Ingestor(store, EntryVerifier(TEAM), max_parked_per_author=ENTRY_COUNT)
         outcomes = {ingestor.receive(entry.encode()).outcome for entry in delivery}
         assert outcomes <= {Outcome.STORED, Outcome.PARKED}
         assert store.log(written_log[0].author) == written_log
+
+
+def test_peer_rebuilds_the_log_when_shuffled_delivery_overflows_the_parking_cap(
+    written_log: list[Entry], tmp_path: Path
+) -> None:
+    delivery = written_log[:]
+    random.Random(7).shuffle(delivery)  # noqa: S311 - deterministic test order, not crypto
+    with SqliteStore(tmp_path / "peer.db") as store:
+        ingestor = Ingestor(store, EntryVerifier(TEAM), max_parked_per_author=8)
+        first_round = {ingestor.receive(entry.encode()).outcome for entry in delivery}
+        assert Outcome.DEFERRED in first_round
+        for _ in range(ENTRY_COUNT):
+            if len(store.log(written_log[0].author)) == ENTRY_COUNT:
+                break
+            for entry in delivery:
+                ingestor.receive(entry.encode())
+        assert store.log(written_log[0].author) == written_log
+        assert store.all_parked() == []
 
 
 def test_every_single_byte_modification_is_rejected(written_log: list[Entry]) -> None:

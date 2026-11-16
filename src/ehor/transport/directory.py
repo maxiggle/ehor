@@ -66,7 +66,7 @@ class DirectoryExchange:
                 if path in self._imported:
                     continue
                 receipt = self._ingestor.receive(path.read_bytes())
-                if receipt.outcome is not Outcome.PARKED:
+                if receipt.outcome not in (Outcome.PARKED, Outcome.DEFERRED):
                     self._imported.add(path)
                 stored += receipt.outcome is Outcome.STORED
                 stored += len(receipt.released)

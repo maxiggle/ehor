@@ -7,6 +7,7 @@ from ehor.identity import KeyHandle
 from ehor.identity.software import SoftwareSigner
 from ehor.log.authorize import Decision
 from ehor.log.entry import Entry, EntryContent, Kind
+from ehor.log.roster import Member, Roster, RosterDevice, Trust
 from ehor.log.verify import EntryVerifier
 from ehor.store.ingest import Ingestor, Outcome
 from ehor.store.local_log import LocalLog, NotAuthorizedError
@@ -127,3 +128,104 @@ def test_local_log_refuses_unauthorized_writes(
     authorizer.allowed.add(local_log.author)
     entry = local_log.append("#backend", Kind.MESSAGE, message("hi"))
     assert authorizer.stored_ids == [entry.id]
+
+
+def _stranger_entries(
+    make: Callable[..., EntryContent], signer: SoftwareSigner, key: KeyHandle, count: int
+) -> list[Entry]:
+    author = signer.public_key(key)
+    return [
+        make(author=author, seq=seq, prev=bytes(32), ts=seq).sign(signer, key)
+        for seq in range(2, count + 2)
+    ]
+
+
+def test_a_stranger_cannot_park_more_than_the_per_author_cap(
+    store: SqliteStore,
+    team: bytes,
+    authorizer: FakeAuthorizer,
+    make_content: Callable[..., EntryContent],
+    signer: SoftwareSigner,
+    other_handle: KeyHandle,
+) -> None:
+    ingestor = Ingestor(store, EntryVerifier(team), authorizer, max_parked_per_author=2)
+    flood = _stranger_entries(make_content, signer, other_handle, 5)
+    outcomes = [ingestor.receive(entry.encode()).outcome for entry in flood]
+    assert outcomes == [Outcome.PARKED] * 2 + [Outcome.DEFERRED] * 3
+    assert store.all_parked() == flood[:2]
+    assert ingestor.receive(flood[0].encode()).outcome is Outcome.PARKED
+
+
+def test_strangers_cannot_park_more_than_the_total_cap(
+    store: SqliteStore,
+    team: bytes,
+    authorizer: FakeAuthorizer,
+    make_content: Callable[..., EntryContent],
+    signer: SoftwareSigner,
+    other_handle: KeyHandle,
+    third_handle: KeyHandle,
+) -> None:
+    ingestor = Ingestor(store, EntryVerifier(team), authorizer, max_parked=3)
+    first = _stranger_entries(make_content, signer, other_handle, 2)
+    second = _stranger_entries(make_content, signer, third_handle, 2)
+    outcomes = [ingestor.receive(entry.encode()).outcome for entry in [*first, *second]]
+    assert outcomes == [Outcome.PARKED] * 3 + [Outcome.DEFERRED]
+    assert store.parked_count() == 3
+
+
+def test_a_full_park_does_not_turn_away_an_authorized_author(
+    store: SqliteStore,
+    team: bytes,
+    authorizer: FakeAuthorizer,
+    make_content: Callable[..., EntryContent],
+    signer: SoftwareSigner,
+    handle: KeyHandle,
+    other_handle: KeyHandle,
+) -> None:
+    ingestor = Ingestor(store, EntryVerifier(team), authorizer, max_parked=2)
+    for entry in _stranger_entries(make_content, signer, other_handle, 3):
+        ingestor.receive(entry.encode())
+    member = _chain(make_content, signer, handle)
+    authorizer.allowed.add(member[0].author)
+    assert ingestor.receive(member[1].encode()).outcome is Outcome.PARKED
+    receipt = ingestor.receive(member[0].encode())
+    assert (receipt.outcome, receipt.released) == (Outcome.STORED, (member[1].id,))
+
+
+def test_a_deferred_entry_is_stored_once_it_can_be_placed(
+    store: SqliteStore,
+    team: bytes,
+    authorizer: FakeAuthorizer,
+    make_content: Callable[..., EntryContent],
+    signer: SoftwareSigner,
+    handle: KeyHandle,
+) -> None:
+    ingestor = Ingestor(store, EntryVerifier(team), authorizer, max_parked_per_author=1)
+    chain = _chain(make_content, signer, handle)
+    assert ingestor.receive(chain[0].encode()).outcome is Outcome.PARKED
+    assert ingestor.receive(chain[1].encode()).outcome is Outcome.DEFERRED
+    authorizer.allowed.add(chain[0].author)
+    assert ingestor.receive(chain[0].encode()).outcome is Outcome.STORED
+    assert ingestor.receive(chain[1].encode()).outcome is Outcome.STORED
+    assert store.all_parked() == []
+
+
+def test_authorized_rosters_are_parked_past_every_cap(
+    store: SqliteStore,
+    team: bytes,
+    authorizer: FakeAuthorizer,
+    make_content: Callable[..., EntryContent],
+    signer: SoftwareSigner,
+    handle: KeyHandle,
+) -> None:
+    ingestor = Ingestor(
+        store, EntryVerifier(team), authorizer, max_parked=0, max_parked_per_author=0
+    )
+    admin = signer.public_key(handle)
+    authorizer.allowed.add(admin)
+    device = RosterDevice(admin, Trust.SOFTWARE, "laptop")
+    body = Roster(1, None, "Acme", ("gef",), (Member("gef", (), ("*",), (device,)),)).encode()
+    roster = make_content(seq=2, prev=bytes(32), channel="_team", kind=Kind.ROSTER, body=body)
+    message = make_content(seq=3, prev=bytes(32))
+    assert ingestor.receive(roster.sign(signer, handle).encode()).outcome is Outcome.PARKED
+    assert ingestor.receive(message.sign(signer, handle).encode()).outcome is Outcome.DEFERRED

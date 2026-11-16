@@ -280,6 +280,8 @@ Entries stored by step 11 MAY be forwarded to any peer allowed in the channel (g
 
 Receivers SHOULD rate-limit entries per author. The limit is local policy, not part of the protocol.
 
+Parking is open to anyone who can reach a receiver: a valid signature from any key is enough to make an entry wait at step 8. A receiver MUST therefore bound what it parks, per author and in total, and discard an entry that would exceed either bound without recording it. This loses nothing. A parked or discarded entry is not part of the receiver's frontier (§8), so peers offer it again in a later session, by which time the roster or entry it waited for may have arrived. An entry that passed step 8 and waits only on a gap (step 10) counts toward its author's bound but not the total, so strangers cannot crowd out members. A `roster` entry that passed step 8 is always parked: a guest holds every roster this way (§8), and only an admin can sign one. The bounds are local policy; this implementation parks at most 64 entries per author and 1024 in total.
+
 ## 6. Encryption
 
 `message` and `status` bodies are sealed for every device allowed to read the channel when the entry is written.

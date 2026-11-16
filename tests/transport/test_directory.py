@@ -127,3 +127,33 @@ def test_exports_the_logs_of_keys_that_sign_here(
     assert store_b.log(key.public_key) == [entry]
     store_a.close()
     store_b.close()
+
+
+def test_entries_deferred_by_the_parking_cap_are_imported_later(
+    tmp_path: Path,
+    signer: SoftwareSigner,
+    handle: KeyHandle,
+    other_handle: KeyHandle,
+    team: bytes,
+    message: Callable[[str], bytes],
+) -> None:
+    folder = tmp_path / "shared"
+    log_a, store_a, sync_a = _device(tmp_path / "a.db", folder, signer, handle, team)
+    entries = [log_a.append("#backend", Kind.MESSAGE, message(text)) for text in "abc"]
+    sync_a.export()
+    first = next((folder / log_a.author.hex()).glob("0000000001-*"))
+    held_back = first.read_bytes()
+    first.unlink()
+
+    store_b = SqliteStore(tmp_path / "b.db")
+    verifier = EntryVerifier(team)
+    ingestor = Ingestor(store_b, verifier, max_parked_per_author=1)
+    sync_b = DirectoryExchange(folder, store_b, ingestor, signer.public_key(other_handle))
+    assert sync_b.import_new() == 0
+    assert store_b.all_parked() == [entries[1]]
+
+    first.write_bytes(held_back)
+    assert sync_b.import_new() == 3
+    assert store_b.log(log_a.author) == entries
+    store_a.close()
+    store_b.close()

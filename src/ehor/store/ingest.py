@@ -6,11 +6,15 @@ from ehor.log.entry import Entry, Kind
 from ehor.log.verify import DroppedEntryError, EntryVerifier, RejectedEntryError
 from ehor.store.base import Store
 
+MAX_PARKED = 1024
+MAX_PARKED_PER_AUTHOR = 64
+
 
 class Outcome(StrEnum):
     STORED = "stored"
     FORKED = "forked"
     PARKED = "parked"
+    DEFERRED = "deferred"
     IGNORED = "ignored"
     REJECTED = "rejected"
     DROPPED = "dropped"
@@ -25,14 +29,29 @@ class Receipt:
 
 
 class Ingestor:
-    """Runs protocol §5 on entries from other devices and stores the ones that pass."""
+    """Runs protocol §5 on entries from other devices and stores the ones that pass.
+
+    Anyone who reaches a sync port can sign entries that have to wait, so the parked set is
+    capped. An entry over the cap is deferred: nothing is kept, and since it never enters
+    the frontier, peers offer it again once it can be placed. Entries the roster already
+    authorizes are held to the per-author cap only, and authorized rosters to none: a
+    device that is not yet a member keeps every roster parked, and no stranger can forge one.
+    """
 
     def __init__(
-        self, store: Store, verifier: EntryVerifier, authorizer: Authorizer | None = None
+        self,
+        store: Store,
+        verifier: EntryVerifier,
+        authorizer: Authorizer | None = None,
+        *,
+        max_parked: int = MAX_PARKED,
+        max_parked_per_author: int = MAX_PARKED_PER_AUTHOR,
     ) -> None:
         self._store = store
         self._verifier = verifier
         self._authorizer = authorizer
+        self._max_parked = max_parked
+        self._max_parked_per_author = max_parked_per_author
         self._authorization_changed = False
 
     def receive(self, raw: bytes) -> Receipt:
@@ -60,8 +79,7 @@ class Ingestor:
                 self._store.unpark(entry.id)
                 return Receipt(Outcome.REJECTED, entry.id, decision.reason)
             if decision.verdict is Verdict.WAIT:
-                self._store.park(entry)
-                return Receipt(Outcome.PARKED, entry.id, decision.reason)
+                return self._park(entry, decision.reason, authorized=False)
         receipt = self._place(entry)
         if self._authorizer is not None and _counts_for_authorization(entry, receipt):
             self._authorization_changed |= self._authorizer.accepted(entry)
@@ -78,13 +96,29 @@ class Ingestor:
         if entry.seq > 1:
             previous = self._store.at(entry.author, entry.seq - 1)
             if not previous:
-                self._store.park(entry)
-                return Receipt(Outcome.PARKED, entry.id, f"missing seq {entry.seq - 1}")
+                return self._park(
+                    entry, f"missing seq {entry.seq - 1}", authorized=self._authorizer is not None
+                )
             if entry.content.prev not in {p.id for p in previous}:
                 return Receipt(Outcome.REJECTED, entry.id, "prev does not match seq - 1")
         self._store.insert(entry)
         self._store.unpark(entry.id)
         return Receipt(Outcome.STORED, entry.id)
+
+    def _park(self, entry: Entry, reason: str, *, authorized: bool) -> Receipt:
+        if not self._has_room(entry, authorized=authorized):
+            return Receipt(Outcome.DEFERRED, entry.id, "too many entries are already waiting")
+        self._store.park(entry)
+        return Receipt(Outcome.PARKED, entry.id, reason)
+
+    def _has_room(self, entry: Entry, *, authorized: bool) -> bool:
+        if self._store.is_parked(entry.id):
+            return True
+        if authorized and entry.content.kind is Kind.ROSTER:
+            return True
+        if self._store.parked_count(entry.author) >= self._max_parked_per_author:
+            return False
+        return authorized or self._store.parked_count() < self._max_parked
 
     def _release(self, stored: Entry) -> tuple[bytes, ...]:
         released: list[bytes] = []

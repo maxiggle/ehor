@@ -188,6 +188,19 @@ class SqliteStore:
             (entry.id, entry.author, entry.seq, entry.encode()),
         )
 
+    def is_parked(self, entry_id: bytes) -> bool:
+        row = self._conn.execute("SELECT 1 FROM parked WHERE id = ?", (entry_id,)).fetchone()
+        return row is not None
+
+    def parked_count(self, author: bytes | None = None) -> int:
+        if author is None:
+            row = self._conn.execute("SELECT COUNT(*) FROM parked").fetchone()
+        else:
+            row = self._conn.execute(
+                "SELECT COUNT(*) FROM parked WHERE author = ?", (author,)
+            ).fetchone()
+        return int(row[0])
+
     def parked(self, author: bytes, seq: int) -> list[Entry]:
         return self._entries(
             "SELECT raw FROM parked WHERE author = ? AND seq = ? ORDER BY id", (author, seq)
