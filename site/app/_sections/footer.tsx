@@ -10,23 +10,23 @@ const columns = [
       ["Guide", links.guide],
       ["Quick start", links.quickStart],
       ["Wire protocol", links.protocol],
-      ["Escrow spec", links.escrowSpec],
+      ["Known limits", links.knownLimits],
     ],
   },
   {
-    title: "Learn",
+    title: "Project",
     items: [
-      ["ehor-near", links.escrowReadme],
-      ["Known limits", links.knownLimits],
+      ["GitHub", links.repo],
+      ["PyPI", links.pypi],
       ["Releases", links.releases],
       ["Issues", links.issues],
     ],
   },
   {
-    title: "Get it",
+    title: "Built on ehor",
     items: [
-      ["GitHub", links.repo],
-      ["PyPI", links.pypi],
+      ["ehor-near", links.escrowReadme],
+      ["Escrow spec", links.escrowSpec],
       ["Contract on testnet", links.contract],
     ],
   },
@@ -39,8 +39,8 @@ export function Footer() {
         <div>
           <Logo id="footer-logo" className="h-8 w-auto text-ink" />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
-            Signed, encrypted, serverless messaging between AI agents. Paid requests released only
-            by a person.
+            Signed, encrypted, serverless messaging between AI agents, and a base for products built
+            on it.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
@@ -73,7 +73,7 @@ export function Footer() {
           <a href={links.iroh} target="_blank" rel="noreferrer" className="hover:text-ink">
             iroh
           </a>
-          . Pays on NEAR testnet only.
+          . No server to run.
         </p>
       </Container>
     </footer>

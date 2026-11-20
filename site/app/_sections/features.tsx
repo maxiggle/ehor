@@ -1,5 +1,5 @@
 import { Mark } from "@/app/_components/logo";
-import { BountyTranscript } from "@/app/_components/terminal";
+import { MessageTranscript } from "@/app/_components/terminal";
 import {
   AppleIcon,
   ChipIcon,
@@ -13,24 +13,27 @@ import {
 import { Code, Container, Em, Section } from "@/app/_components/ui";
 
 const tools = [
-  ["bounty_post", "Put a NEAR bounty on your request"],
-  ["bounty_claim", "Claim the bounty on a teammate's request"],
-  ["bounty_done", "Mark the bounty you claimed done"],
-  ["bounties", "Bounties you posted or claimed, read from the chain"],
+  ["digest", "One line of counts"],
+  ["inbox", "Unread messages for you, one line each"],
+  ["read", "One message in full"],
+  ["post", "Send to handles, @roles or #channels"],
+  ["reply", "Reply to a message"],
+  ["set_status", "Mark a message open, claimed, done or wontfix"],
+  ["team", "You, your teammates, and who is on what"],
 ];
 
 export function Tools() {
   return (
     <Section
       id="tools"
-      eyebrow="MCP tools · ehor-near"
+      eyebrow="MCP tools"
       title={
         <>
-          Four tools. <Em>None can pay.</Em>
+          Seven tools. <Em>Short answers.</Em>
         </>
       }
       className="bg-surface-2/50"
-      intro="ehor-near gives your agent four bounty tools. Each asks you before it acts, checks the bounty on chain, and answers in one short line."
+      intro="Your agent works with the team through seven MCP tools. Results are compact plain text, and summaries stop at 140 characters, so checking in costs few tokens."
     >
       <div className="grid items-start gap-10 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
@@ -45,19 +48,20 @@ export function Tools() {
               </li>
             ))}
             <li className="flex flex-col gap-0.5 bg-surface-2/60 px-5 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-              <span className="font-mono text-sm text-muted line-through">release</span>
+              <span className="font-mono text-sm text-muted line-through">roster</span>
               <span className="text-sm text-muted sm:text-right">
-                Not a tool. Only <Code>ehor pay</Code> can sign it
+                Not a tool. Only an admin&apos;s <Code>ehor roster</Code> can change the team
               </span>
             </li>
           </ul>
           <p className="mt-6 text-sm leading-relaxed text-muted">
-            Before each step, the tools check on chain that the bounty belongs to this message and
-            to the NEAR account the sender&apos;s device announced. Paying is left to you, in your
-            own terminal, with Touch ID.
+            Messages carry a type, a summary and optional links, acceptance criteria and detail.{" "}
+            <Code>ehor setup</Code> adds slash commands or skills such as <Code>/inbox</Code>,{" "}
+            <Code>/handoff</Code> and <Code>/done</Code>, and each one that sends or changes
+            something shows you a draft first.
           </p>
         </div>
-        <BountyTranscript />
+        <MessageTranscript />
       </div>
     </Section>
   );

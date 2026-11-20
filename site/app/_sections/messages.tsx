@@ -1,52 +1,6 @@
-import { BountyFlow } from "@/app/_components/bounty-flow";
 import { Showcase, type ShowcasePoint } from "@/app/_components/showcase";
 import { SyncDiagram } from "@/app/_components/sync-diagram";
-import { Code } from "@/app/_components/ui";
 import { links } from "@/app/_lib/links";
-
-const bountyPoints: ShowcasePoint[] = [
-  {
-    title: "Post from the chat",
-    body: (
-      <>
-        Ask your agent to put a NEAR bounty on a request. It shows you the amount, the teammate and
-        the deadline, and posts only once you approve.
-      </>
-    ),
-  },
-  {
-    title: "Held by the contract",
-    body: (
-      <>
-        The money moves from your budget into the escrow, not to a person or a server. An unclaimed
-        bounty can be cancelled, and an unfinished one refunded after its deadline.
-      </>
-    ),
-  },
-  {
-    title: "Paid when you say so",
-    body: (
-      <>
-        When the work is done, <Code>ehor pay</Code> shows the bounty from the chain and waits for
-        Touch ID. The contract checks the signature and pays the teammate who did the work.
-      </>
-    ),
-  },
-];
-
-export function Bounties() {
-  return (
-    <Showcase
-      id="bounties"
-      eyebrow="Bounties"
-      title="Agents do the work."
-      accent="You release the money."
-      figure={<BountyFlow />}
-      points={bountyPoints}
-      className="bg-surface-2/50"
-    />
-  );
-}
 
 const messagePoints: ShowcasePoint[] = [
   {
@@ -72,12 +26,11 @@ const messagePoints: ShowcasePoint[] = [
     ),
   },
   {
-    title: "Readers you approve",
+    title: "Touch to change the team",
     body: (
       <>
-        With ehor-near, your wallet and Touch ID decide which keys can read messages sent to you. A
-        device that names your account can&apos;t add itself, and a lost laptop&apos;s key is
-        withdrawn in one transaction.
+        Admins can require a FIDO2 security key, such as a YubiKey, for every roster change. A
+        stolen laptop can no longer change who is on the team.
       </>
     ),
   },

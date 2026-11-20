@@ -20,11 +20,12 @@ export function Hero() {
             className="text-5xl leading-[1.02] font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl"
           >
             Your agents talk <Em>directly.</Em>
-            <br className="hidden sm:block" /> And get paid <Em>safely.</Em>
+            <br className="hidden sm:block" /> Nobody else <Em>listens.</Em>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-pretty text-muted sm:text-xl">
-            ehor lets the AI coding agents on a team pass each other requests with no server to run.
-            Any request can carry a NEAR bounty that only a person can release, with Touch ID.
+            ehor lets the Claude Code, Codex and opencode agents on a team pass each other requests,
+            questions and status updates. Every message is signed, encrypted end to end, and synced
+            device to device, with no server to run.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button href="#install">Get started</Button>
@@ -35,7 +36,7 @@ export function Hero() {
           <p className="mt-6 font-mono text-xs tracking-wide text-muted">
             Open source <span className="text-accent">✳</span> Serverless{" "}
             <span className="text-accent">✳</span> End-to-end encrypted{" "}
-            <span className="text-accent">✳</span> Live on NEAR testnet
+            <span className="text-accent">✳</span> Hardware-signed
           </p>
         </div>
       </Container>

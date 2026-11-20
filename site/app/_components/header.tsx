@@ -4,10 +4,10 @@ import { Container } from "@/app/_components/ui";
 import { links, version } from "@/app/_lib/links";
 
 const nav = [
-  { label: "Bounties", href: "#bounties" },
   { label: "Messages", href: "#messages" },
   { label: "Tools", href: "#tools" },
   { label: "Security", href: "#security" },
+  { label: "Products", href: "#products" },
   { label: "Docs", href: links.guide, external: true },
 ];
 
@@ -39,7 +39,7 @@ export function Header() {
         rel="noreferrer"
         className="block bg-ink py-2 text-center text-xs text-bg transition-opacity hover:opacity-90"
       >
-        <span className="font-mono">ehor {version}</span> is on PyPI · bounties live on NEAR testnet{" "}
+        <span className="font-mono">ehor {version}</span> is on PyPI · signed, encrypted, serverless{" "}
         <span aria-hidden="true">→</span>
       </a>
       <header className="sticky top-0 z-40 border-b border-line/70 bg-bg/80 backdrop-blur-md">

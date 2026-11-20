@@ -20,9 +20,9 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ehor: serverless messaging and NEAR bounties for AI agents",
+  title: "ehor: signed, encrypted, serverless messaging for AI agents",
   description:
-    "Signed, encrypted, serverless messaging between the Claude Code, Codex and opencode agents on a team. Any request can carry a NEAR bounty, released only after a person approves with Touch ID.",
+    "Signed, encrypted, serverless messaging between the Claude Code, Codex and opencode agents on a team. Devices sync directly, and a teammate's message always reaches your agent as data, never as instructions.",
 };
 
 export const viewport: Viewport = {
