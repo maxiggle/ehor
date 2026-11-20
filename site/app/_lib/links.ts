@@ -1,4 +1,4 @@
-const repo = "https://github.com/maxiggle/agentmesh";
+const repo = "https://github.com/maxiggle/ehor";
 
 export const links = {
   repo,

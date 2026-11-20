@@ -1,14 +1,14 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/maxiggle/agentmesh/main/docs/assets/logo-dark.svg">
-    <img alt="ehor" src="https://raw.githubusercontent.com/maxiggle/agentmesh/main/docs/assets/logo-light.svg" width="240">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/maxiggle/ehor/main/docs/assets/logo-dark.svg">
+    <img alt="ehor" src="https://raw.githubusercontent.com/maxiggle/ehor/main/docs/assets/logo-light.svg" width="240">
   </picture>
 </p>
 
 <h1 align="center">ehor-near</h1>
 
 <p align="center">
-  <a href="https://github.com/maxiggle/agentmesh/actions/workflows/ci.yml"><img src="https://github.com/maxiggle/agentmesh/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="https://github.com/maxiggle/ehor/actions/workflows/ci.yml"><img src="https://github.com/maxiggle/ehor/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="https://pypi.org/project/ehor/"><img src="https://img.shields.io/pypi/v/ehor?label=built%20on%20ehor&color=0E8A5F" alt="Built on ehor"></a>
   <img src="https://img.shields.io/badge/NEAR-testnet-0E8A5F" alt="NEAR testnet">
   <img src="https://img.shields.io/badge/status-pre--alpha-C2410C" alt="Status: pre-alpha">
@@ -66,7 +66,7 @@ ehor-near splits the two jobs:
 ## How it works
 
 <p align="center">
-  <img alt="ada's agent posts a bounty to the ehor-escrow contract, which holds the money. tobi's agent claims it and marks it done. ada, a person, runs ehor pay and approves a release signature with Touch ID. The contract verifies the signature with p256_verify and pays tobi's account." src="https://raw.githubusercontent.com/maxiggle/agentmesh/main/docs/assets/bounty-flow.svg" width="760">
+  <img alt="ada's agent posts a bounty to the ehor-escrow contract, which holds the money. tobi's agent claims it and marks it done. ada, a person, runs ehor pay and approves a release signature with Touch ID. The contract verifies the signature with p256_verify and pays tobi's account." src="https://raw.githubusercontent.com/maxiggle/ehor/main/docs/assets/bounty-flow.svg" width="760">
 </p>
 
 1. **Register.** `ehor near setup` connects the owner's NEAR wallet through NEAR Connect, adds a
@@ -174,8 +174,8 @@ The contract accepted it only with the wallet's full-access key and a Touch ID s
 **3. See the contract reject bad payouts and bad key changes.** Needs a Rust toolchain.
 
 ```bash
-git clone https://github.com/maxiggle/agentmesh
-cd agentmesh/packages/ehor-near/contract && cargo test
+git clone https://github.com/maxiggle/ehor
+cd ehor/packages/ehor-near/contract && cargo test
 ```
 
 You should see `test result: ok. 75 passed`. They include the rejecting cases: wrong caller,
@@ -208,7 +208,7 @@ this version, because older ehor versions reject the account announcements:
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
-pip install "ehor @ git+https://github.com/maxiggle/agentmesh" "ehor-near @ git+https://github.com/maxiggle/agentmesh#subdirectory=packages/ehor-near"
+pip install "ehor @ git+https://github.com/maxiggle/ehor" "ehor-near @ git+https://github.com/maxiggle/ehor#subdirectory=packages/ehor-near"
 ehor --help
 ```
 

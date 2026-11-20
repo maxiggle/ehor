@@ -20,11 +20,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/maxiggle/agentmesh"
-Source = "https://github.com/maxiggle/agentmesh"
-Issues = "https://github.com/maxiggle/agentmesh/issues"
-Changelog = "https://github.com/maxiggle/agentmesh/releases"
-Protocol = "https://github.com/maxiggle/agentmesh/blob/main/docs/protocol.md"
+Homepage = "https://github.com/maxiggle/ehor"
+Source = "https://github.com/maxiggle/ehor"
+Issues = "https://github.com/maxiggle/ehor/issues"
+Changelog = "https://github.com/maxiggle/ehor/releases"
+Protocol = "https://github.com/maxiggle/ehor/blob/main/docs/protocol.md"
 
 [project.scripts]
 ehor = "ehor.cli:main"

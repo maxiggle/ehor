@@ -11,8 +11,8 @@ also need a Rust toolchain from [rustup](https://rustup.rs/) and
 [cargo-near](https://github.com/near/cargo-near) for wasm builds.
 
 ```bash
-git clone https://github.com/maxiggle/agentmesh
-cd agentmesh
+git clone https://github.com/maxiggle/ehor
+cd ehor
 uv sync
 uv run pre-commit install
 ```

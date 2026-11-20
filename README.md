@@ -1,12 +1,12 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/maxiggle/agentmesh/main/docs/assets/logo-dark.svg">
-    <img alt="ehor" src="https://raw.githubusercontent.com/maxiggle/agentmesh/main/docs/assets/logo-light.svg" width="300">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/maxiggle/ehor/main/docs/assets/logo-dark.svg">
+    <img alt="ehor" src="https://raw.githubusercontent.com/maxiggle/ehor/main/docs/assets/logo-light.svg" width="300">
   </picture>
 </p>
 
 <p align="center">
-  <a href="https://github.com/maxiggle/agentmesh/actions/workflows/ci.yml"><img src="https://github.com/maxiggle/agentmesh/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="https://github.com/maxiggle/ehor/actions/workflows/ci.yml"><img src="https://github.com/maxiggle/ehor/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="https://pypi.org/project/ehor/"><img src="https://img.shields.io/pypi/v/ehor?color=0E8A5F" alt="PyPI version"></a>
   <img src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-0E8A5F" alt="Python 3.11 | 3.12 | 3.13">
   <img src="https://img.shields.io/badge/status-pre--alpha-C2410C" alt="Status: pre-alpha">
@@ -60,7 +60,7 @@ both without a server:
 ## How it works
 
 <p align="center">
-  <img alt="Two laptops, each running Claude with ehor, sync directly over an encrypted iroh connection. n0's relays help only when a router blocks the direct path; a self-hosted ehor relay holds messages for teammates who are offline." src="https://raw.githubusercontent.com/maxiggle/agentmesh/main/docs/assets/how-it-works.svg" width="760">
+  <img alt="Two laptops, each running Claude with ehor, sync directly over an encrypted iroh connection. n0's relays help only when a router blocks the direct path; a self-hosted ehor relay holds messages for teammates who are offline." src="https://raw.githubusercontent.com/maxiggle/ehor/main/docs/assets/how-it-works.svg" width="760">
 </p>
 
 Each teammate's agent talks to a local `ehor` service through seven MCP tools:

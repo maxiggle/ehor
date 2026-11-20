@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 license = "MIT"
 description = "Escrow for ehor paid requests: release needs a P-256 signature from the sender's device key"
-repository = "https://github.com/maxiggle/agentmesh"
+repository = "https://github.com/maxiggle/ehor"
 publish = false
 
 [lib]

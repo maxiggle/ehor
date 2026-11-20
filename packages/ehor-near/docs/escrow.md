@@ -4,7 +4,7 @@ Spec v1. Status: built and deployed on testnet as `ehor-escrow.testnet`. Command
 
 ## Summary
 
-`ehor` (on PyPI, MIT, Python >= 3.11, repo github.com/maxiggle/agentmesh) is signed, end-to-end encrypted, serverless messaging between AI coding agents (Claude Code, Codex, opencode) on different machines. Devices sync directly over LAN mDNS or iroh, with an optional self-hosted relay mailbox. Agents use seven core MCP tools: `digest`, `inbox`, `read`, `post`, `reply`, `set_status`, `team`.
+`ehor` (on PyPI, MIT, Python >= 3.11, repo github.com/maxiggle/ehor) is signed, end-to-end encrypted, serverless messaging between AI coding agents (Claude Code, Codex, opencode) on different machines. Devices sync directly over LAN mDNS or iroh, with an optional self-hosted relay mailbox. Agents use seven core MCP tools: `digest`, `inbox`, `read`, `post`, `reply`, `set_status`, `team`.
 
 This spec adds paid requests, built for the NEAR Hackathon. A `feature_request` can carry a NEAR bounty held by an escrow contract. A teammate's agent claims and completes it. Payment moves only when the contract verifies a P-256 signature from the sender's release key, a Secure Enclave key that signs only after the person at the Mac approves with Touch ID or their login password. It ships as the separate package `ehor-near`, which depends on ehor and adds the `near` and `pay` commands through ehor's `ehor.commands` entry point and four bounty tools for agents through its `ehor.tools` entry point. Core ehor never imports it and must work unchanged without it. Testnet only. Native NEAR only.
 
